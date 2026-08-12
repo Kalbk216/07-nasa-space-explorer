@@ -20,7 +20,6 @@ getImagesBtn.addEventListener('click', () => {
   const startDate = startInput.value;
   const endDate = endInput.value;
 
-  // Show a loading message while we wait for the data
   gallery.innerHTML = `
     <div class="placeholder">
       <div class="placeholder-icon">🚀</div>
@@ -28,14 +27,27 @@ getImagesBtn.addEventListener('click', () => {
     </div>
   `;
 
-  // Build the API URL using our key and selected date range
   const apiUrl = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}&start_date=${startDate}&end_date=${endDate}`;
 
   fetch(apiUrl)
     .then(response => response.json())
     .then(data => {
-      console.log(data); // just to check what we got back
-      // Next step: turn this data into gallery items
+      // Clear the loading message
+      gallery.innerHTML = '';
+
+      // Loop through each day's data and create a gallery item for it
+      data.forEach(item => {
+        const galleryItem = document.createElement('div');
+        galleryItem.className = 'gallery-item';
+
+        galleryItem.innerHTML = `
+          <img src="${item.url}" alt="${item.title}" />
+          <h3>${item.title}</h3>
+          <p>${item.date}</p>
+        `;
+
+        gallery.appendChild(galleryItem);
+      });
     })
     .catch(error => {
       console.error('Error fetching APOD data:', error);
